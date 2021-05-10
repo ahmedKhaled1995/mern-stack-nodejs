@@ -1,0 +1,19 @@
+{
+  "name": "mern-stack-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmedKhaled1995/mern-stack-nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ahmedKhaled1995/mern-stack-nodejs/issues"
+  },
+  "homepage": "https://github.com/ahmedKhaled1995/mern-stack-nodejs#readme"
+}
