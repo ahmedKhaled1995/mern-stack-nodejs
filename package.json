@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/ahmedKhaled1995/mern-stack-nodejs/issues"
   },
-  "homepage": "https://github.com/ahmedKhaled1995/mern-stack-nodejs#readme"
+  "homepage": "https://github.com/ahmedKhaled1995/mern-stack-nodejs#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.12.8"
+  }
 }
