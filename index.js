@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 // Importing routes
-const userRouter = require("./routes/users");
+// const userRouter = require("./routes/users");
 // const ratingRouter = require("./routes/ratings");
 
 // Database connection
@@ -20,8 +20,13 @@ const app = express();
 
 // Using routes and middlewares
 app.use(express.json());
-app.use(userRouter);
+// app.use(userRouter);
 // app.use(ratingRouter);
+
+// Test route (For debugging only)
+app.get('/', (req, res) => {
+    res.send('Hello World from ITI!')
+});
 
 // Starting the server
 app.listen(port, (err) => {
