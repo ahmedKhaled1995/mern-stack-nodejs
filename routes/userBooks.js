@@ -20,7 +20,7 @@ router.post("/myBooks", auth, async (req, res) => {
 });
 
 
-//GET /categories?completed=true
+//GET /myBooks?shelveStatus=Currently_Reading
 //&limit=2
 //&skip=1
 //&sortBy=createdAt:asc || desc
@@ -29,10 +29,10 @@ router.get("/myBooks", auth, async (req, res) => {
         const match = { user: req.authorizedUser._id };
         let skip = req.query.skip ? parseInt(req.query.skip) : 0;
         let limit = req.query.limit ? parseInt(req.query.limit) : 0;
-        // const completedQuery = req.query.completed;
-        // if(completedQuery){
-        //     match.completed = (completedQuery === "true");
-        // }
+        const shelveStatusQuery = req.query.shelveStatus;
+        if (shelveStatusQuery) {
+            match.shelveStatus = shelveStatusQuery;
+        }
         const sortBy = req.query.sortBy;
         const sort = {};
         if (sortBy) {

@@ -13,7 +13,7 @@ const userBookSchema = new mongoose.Schema({
     },
     shelveStatus: {
         type: String,
-        enum: ['Read', 'Currently Reading', 'Want To Read'],
+        enum: ['Read', 'Currently_Reading', 'Want_To_Read'],
         require: true,
     },
 }, {
