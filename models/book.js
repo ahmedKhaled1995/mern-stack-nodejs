@@ -23,13 +23,13 @@ const bookSchema = new mongoose.Schema({
     timestamps: true
 });
 
-authorSchema.virtual("ratings", {
+bookSchema.virtual("ratings", {
     ref: "Rating",
     localField: "_id",
     foreignField: "rated"
 });
 
-userSchema.virtual("reviews", {
+bookSchema.virtual("reviews", {
     ref: "Review",
     localField: "_id",
     foreignField: "bookReviewd"
