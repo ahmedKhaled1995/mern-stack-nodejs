@@ -60,7 +60,8 @@ router.get("/authors/:id", auth, async (req, res) => {
         const author = await Author.findOne({ _id });
         try {
             if (!author) {
-                res.status(404).send();
+                console.log("Not found");
+                res.status(404).send({ error: "Resource not found!" });
                 return;
             }
             res.status(200).send(author);
@@ -97,6 +98,24 @@ router.patch("/authors/:id", auth, async (req, res) => {
             res.send(authorDocToUpdate);
         } catch (error) {
             res.status(400).send(error);
+        }
+    } else {
+        res.status(403).send({ error: "forbidden " });
+    }
+});
+
+router.delete("/authors/:id", auth, async (req, res) => {
+    if (req.authorizedUser.isAdmin) {
+        const _id = req.params.id;
+        try {
+            const deletedAuthor = await Author.findOneAndDelete({ _id });
+            if (!deletedAuthor) {
+                res.status(404).send({ error: "Author not found!" });
+                return;
+            }
+            res.send(deletedAuthor);
+        } catch (error) {
+            res.status(500).send(error);
         }
     } else {
         res.status(403).send({ error: "forbidden " });
