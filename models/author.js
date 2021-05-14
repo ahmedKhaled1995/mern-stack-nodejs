@@ -15,7 +15,7 @@ const authorSchema = new mongoose.Schema({
         type: Date,
         min: '1900-01-01',   // y-m-d
         validate(value) {
-            if (new Date().getFullYear() - value.getFullYear()) {
+            if (new Date().getFullYear() - value.getFullYear() < 18) {
                 throw new Error("User must be 18 to continue!");
             }
         }
