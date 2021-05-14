@@ -7,6 +7,7 @@ const authorRouter = require("./routes/authors");
 const categoryRouter = require("./routes/categories");
 const bookRouter = require("./routes/book");
 const userBookRouter = require("./routes/userBooks");
+const reviewRouter = require("./routes/review");
 
 // Database connection
 mongoose.connect("mongodb://localhost:27017/myRead", {
@@ -28,6 +29,7 @@ app.use(authorRouter);
 app.use(categoryRouter);
 app.use(bookRouter);
 app.use(userBookRouter);
+app.use(reviewRouter);
 // app.use(ratingRouter);
 
 // Test route (For debugging only)
