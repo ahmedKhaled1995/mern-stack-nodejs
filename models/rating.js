@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const ratingSchema = new mongoose.Schema({
-    rateing: {
+    rating: {
         type: Number,
         min: 0,
         max: 5,
@@ -12,7 +12,7 @@ const ratingSchema = new mongoose.Schema({
         required: true,
         ref: "User"
     },
-    rated: {
+    bookRated: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "Book"
