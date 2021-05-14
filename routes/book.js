@@ -13,7 +13,7 @@ router.post("/books", auth, async (req, res) => {
         try {
             await book.populate("category author").execPopulate();
             await book.save();
-            res.status(201).send({ category: book });
+            res.status(201).send({ book: book });
         } catch (error) {
             res.status(400).send(error);
         }
