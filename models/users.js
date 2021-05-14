@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema({
 // adding a new method called getAuthToken() to be accessed as an instance method
 userSchema.methods.getAuthToken = async function () {
     const user = this;
-    console.log(process.env.JWT_SECRET);
+    // console.log(process.env.JWT_SECRET);
     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);     // note that the returned value is a string
     user.tokens.push({ token });
     await user.save();
@@ -83,6 +83,15 @@ userSchema.statics.findByCredentials = async (email, password) => {
     }
     return user;
 };
+
+//adding middleware functions to the schema
+userSchema.pre("save", async function (next) {
+    const userDocument = this;
+    if (userDocument.isModified("password")) {
+        userDocument.password = await bcryptjs.hash(userDocument.password, 8);
+    }
+    next();
+});
 
 // defining model for users table
 const User = mongoose.model("User", userSchema);
