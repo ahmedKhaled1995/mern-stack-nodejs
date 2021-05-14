@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 // Importing routes
 const userRouter = require("./routes/users");
 const authorRouter = require("./routes/authors");
+const categoryRouter = require("./routes/categories");
 // const ratingRouter = require("./routes/ratings");
 
 // Database connection
@@ -23,6 +24,7 @@ const app = express();
 app.use(express.json());
 app.use(userRouter);
 app.use(authorRouter);
+app.use(categoryRouter);
 // app.use(ratingRouter);
 
 // Test route (For debugging only)

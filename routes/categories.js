@@ -1,20 +1,18 @@
 const express = require("express");
-const sharp = require("sharp");
 
-const Author = require("../models/author");
+const Category = require("../models/category");
 const auth = require("../middlewares/auth");
-const uplaoadAvatars = require("../helpers/uploadAvatars");
 
 
 const router = new express.Router();
 
-router.post("/authors", auth, async (req, res) => {
-    const author = new Author(req.body);
+router.post("/categories", auth, async (req, res) => {
+    const category = new Category(req.body);
     // console.log("author add");
     if (req.authorizedUser.isAdmin) {
         try {
-            await author.save();
-            res.status(201).send({ author });
+            await category.save();
+            res.status(201).send({ category: category });
         } catch (error) {
             res.status(400).send(error);
         }
@@ -24,11 +22,11 @@ router.post("/authors", auth, async (req, res) => {
 });
 
 
-//GET /authors?completed=true
+//GET /categories?completed=true
 //&limit=2
 //&skip=1
 //&sortBy=createdAt:asc || desc
-router.get("/authors", auth, async (req, res) => {
+router.get("/categories", auth, async (req, res) => {
     if (req.authorizedUser.isAdmin) {
         try {
             const match = {};
@@ -44,8 +42,8 @@ router.get("/authors", auth, async (req, res) => {
                 const parts = req.query.sortBy.split(":");
                 sort[parts[0]] = (parts[1] === "desc" ? -1 : 1);
             }
-            const authors = await Author.find(match).skip(skip).limit(limit).sort(sort).exec();
-            res.send(authors);
+            const categories = await Category.find(match).skip(skip).limit(limit).sort(sort).exec();
+            res.send(categories);
         } catch {
             res.status(500).send();
         }
@@ -54,16 +52,16 @@ router.get("/authors", auth, async (req, res) => {
     }
 });
 
-router.get("/authors/:id", auth, async (req, res) => {
+router.get("/categories/:id", auth, async (req, res) => {
     if (req.authorizedUser.isAdmin) {
         const _id = req.params.id;
-        const author = await Author.findOne({ _id });
+        const category = await Category.findOne({ _id });
         try {
-            if (!author) {
+            if (!category) {
                 res.status(404).send({ error: "Resource not found!" });
                 return;
             }
-            res.status(200).send(author);
+            res.status(200).send(category);
         } catch {
             res.status(500).send();
         }
@@ -72,11 +70,11 @@ router.get("/authors/:id", auth, async (req, res) => {
     }
 });
 
-router.patch("/authors/:id", auth, async (req, res) => {
+router.patch("/categories/:id", auth, async (req, res) => {
     if (req.authorizedUser.isAdmin) {
-        const authorUpdateList = Object.keys(req.body);
-        const allowedUpdatesList = ["firstName", "lastName", "dateOfBirth"];
-        const validUpdate = authorUpdateList.every((update) => {
+        const categoryUpdateList = Object.keys(req.body);
+        const allowedUpdatesList = ["name"];
+        const validUpdate = categoryUpdateList.every((update) => {
             return allowedUpdatesList.includes(update);
         });
         if (!validUpdate) {
@@ -85,16 +83,16 @@ router.patch("/authors/:id", auth, async (req, res) => {
         }
         try {
             //const taskDocToUpdate = await Task.findById(req.params.id);
-            const authorDocToUpdate = await Author.findOne({ _id: req.params.id });
-            if (!authorDocToUpdate) {
+            const categoryDocToUpdate = await Category.findOne({ _id: req.params.id });
+            if (!categoryDocToUpdate) {
                 res.status(404).send();
                 return;
             }
-            authorUpdateList.forEach((update) => {
-                authorDocToUpdate[update] = req.body[update];
+            categoryUpdateList.forEach((update) => {
+                categoryDocToUpdate[update] = req.body[update];
             });
-            await authorDocToUpdate.save();
-            res.send(authorDocToUpdate);
+            await categoryDocToUpdate.save();
+            res.send(categoryDocToUpdate);
         } catch (error) {
             res.status(400).send(error);
         }
@@ -103,16 +101,16 @@ router.patch("/authors/:id", auth, async (req, res) => {
     }
 });
 
-router.delete("/authors/:id", auth, async (req, res) => {
+router.delete("/categories/:id", auth, async (req, res) => {
     if (req.authorizedUser.isAdmin) {
         const _id = req.params.id;
         try {
-            const deletedAuthor = await Author.findOneAndDelete({ _id });
-            if (!deletedAuthor) {
+            const deletedCategory = await Category.findOneAndDelete({ _id });
+            if (!deletedCategory) {
                 res.status(404).send({ error: "Author not found!" });
                 return;
             }
-            res.send(deletedAuthor);
+            res.send(deletedCategory);
         } catch (error) {
             res.status(500).send(error);
         }
