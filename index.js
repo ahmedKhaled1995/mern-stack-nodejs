@@ -23,6 +23,14 @@ mongoose.connect("mongodb://localhost:27017/myRead", {
 const port = process.env.PORT || 5000;
 const app = express();
 
+// Enabling CORS
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+});
+
+
 // Using routes and middlewares
 app.use(express.json());
 app.use(userRouter);
@@ -32,6 +40,7 @@ app.use(bookRouter);
 app.use(userBookRouter);
 app.use(reviewRouter);
 app.use(ratingRouter);
+
 
 // Test route (For debugging only)
 app.get('/', (req, res) => {
