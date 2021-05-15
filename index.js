@@ -20,7 +20,7 @@ mongoose.connect("mongodb://localhost:27017/myRead", {
 });
 
 // Starting express app
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const app = express();
 
 // Using routes and middlewares
