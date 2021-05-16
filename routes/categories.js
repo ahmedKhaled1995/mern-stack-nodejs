@@ -27,46 +27,38 @@ router.post("/categories", auth, async (req, res) => {
 //&skip=1
 //&sortBy=createdAt:asc || desc
 router.get("/categories", auth, async (req, res) => {
-    if (req.authorizedUser.isAdmin) {
-        try {
-            const match = {};
-            let skip = req.query.skip ? parseInt(req.query.skip) : 0;
-            let limit = req.query.limit ? parseInt(req.query.limit) : 0;
-            // const completedQuery = req.query.completed;
-            // if(completedQuery){
-            //     match.completed = (completedQuery === "true");
-            // }
-            const sortBy = req.query.sortBy;
-            const sort = {};
-            if (sortBy) {
-                const parts = req.query.sortBy.split(":");
-                sort[parts[0]] = (parts[1] === "desc" ? -1 : 1);
-            }
-            const categories = await Category.find(match).skip(skip).limit(limit).sort(sort).exec();
-            res.send(categories);
-        } catch {
-            res.status(500).send();
+    try {
+        const match = {};
+        let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+        let limit = req.query.limit ? parseInt(req.query.limit) : 0;
+        // const completedQuery = req.query.completed;
+        // if(completedQuery){
+        //     match.completed = (completedQuery === "true");
+        // }
+        const sortBy = req.query.sortBy;
+        const sort = {};
+        if (sortBy) {
+            const parts = req.query.sortBy.split(":");
+            sort[parts[0]] = (parts[1] === "desc" ? -1 : 1);
         }
-    } else {
-        res.status(403).send({ error: "forbidden " });
+        const categories = await Category.find(match).skip(skip).limit(limit).sort(sort).exec();
+        res.send(categories);
+    } catch {
+        res.status(500).send();
     }
 });
 
 router.get("/categories/:id", auth, async (req, res) => {
-    if (req.authorizedUser.isAdmin) {
-        const _id = req.params.id;
-        const category = await Category.findOne({ _id });
-        try {
-            if (!category) {
-                res.status(404).send({ error: "Resource not found!" });
-                return;
-            }
-            res.status(200).send(category);
-        } catch {
-            res.status(500).send();
+    const _id = req.params.id;
+    const category = await Category.findOne({ _id });
+    try {
+        if (!category) {
+            res.status(404).send({ error: "Resource not found!" });
+            return;
         }
-    } else {
-        res.status(403).send({ error: "forbidden " });
+        res.status(200).send(category);
+    } catch {
+        res.status(500).send();
     }
 });
 

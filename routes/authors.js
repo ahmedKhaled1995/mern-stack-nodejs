@@ -29,46 +29,38 @@ router.post("/authors", auth, async (req, res) => {
 //&skip=1
 //&sortBy=createdAt:asc || desc
 router.get("/authors", auth, async (req, res) => {
-    if (req.authorizedUser.isAdmin) {
-        try {
-            const match = {};
-            let skip = req.query.skip ? parseInt(req.query.skip) : 0;
-            let limit = req.query.limit ? parseInt(req.query.limit) : 0;
-            // const completedQuery = req.query.completed;
-            // if(completedQuery){
-            //     match.completed = (completedQuery === "true");
-            // }
-            const sortBy = req.query.sortBy;
-            const sort = {};
-            if (sortBy) {
-                const parts = req.query.sortBy.split(":");
-                sort[parts[0]] = (parts[1] === "desc" ? -1 : 1);
-            }
-            const authors = await Author.find(match).skip(skip).limit(limit).sort(sort).exec();
-            res.send(authors);
-        } catch {
-            res.status(500).send();
+    try {
+        const match = {};
+        let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+        let limit = req.query.limit ? parseInt(req.query.limit) : 0;
+        // const completedQuery = req.query.completed;
+        // if(completedQuery){
+        //     match.completed = (completedQuery === "true");
+        // }
+        const sortBy = req.query.sortBy;
+        const sort = {};
+        if (sortBy) {
+            const parts = req.query.sortBy.split(":");
+            sort[parts[0]] = (parts[1] === "desc" ? -1 : 1);
         }
-    } else {
-        res.status(403).send({ error: "forbidden " });
+        const authors = await Author.find(match).skip(skip).limit(limit).sort(sort).exec();
+        res.send(authors);
+    } catch {
+        res.status(500).send();
     }
 });
 
 router.get("/authors/:id", auth, async (req, res) => {
-    if (req.authorizedUser.isAdmin) {
-        const _id = req.params.id;
-        const author = await Author.findOne({ _id });
-        try {
-            if (!author) {
-                res.status(404).send({ error: "Resource not found!" });
-                return;
-            }
-            res.status(200).send(author);
-        } catch {
-            res.status(500).send();
+    const _id = req.params.id;
+    const author = await Author.findOne({ _id });
+    try {
+        if (!author) {
+            res.status(404).send({ error: "Resource not found!" });
+            return;
         }
-    } else {
-        res.status(403).send({ error: "forbidden " });
+        res.status(200).send(author);
+    } catch {
+        res.status(500).send();
     }
 });
 

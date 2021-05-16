@@ -23,51 +23,47 @@ router.post("/books", auth, async (req, res) => {
 });
 
 
-//GET /categories?completed=true
+//GET /books?category=categoryId  OR author=authorId
 //&limit=2
 //&skip=1
 //&sortBy=createdAt:asc || desc
 router.get("/books", auth, async (req, res) => {
-    if (req.authorizedUser.isAdmin) {
-        try {
-            const match = {};
-            let skip = req.query.skip ? parseInt(req.query.skip) : 0;
-            let limit = req.query.limit ? parseInt(req.query.limit) : 0;
-            // const completedQuery = req.query.completed;
-            // if(completedQuery){
-            //     match.completed = (completedQuery === "true");
-            // }
-            const sortBy = req.query.sortBy;
-            const sort = {};
-            if (sortBy) {
-                const parts = req.query.sortBy.split(":");
-                sort[parts[0]] = (parts[1] === "desc" ? -1 : 1);
-            }
-            const books = await Book.find(match).skip(skip).limit(limit).sort(sort).populate("category author").exec();
-            res.send(books);
-        } catch {
-            res.status(500).send();
+    try {
+        const match = {};
+        let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+        let limit = req.query.limit ? parseInt(req.query.limit) : 0;
+        const categoryQuery = req.query.category;
+        const authorQuery = req.query.author;
+        if (categoryQuery) {
+            match.category = req.query.category;
         }
-    } else {
-        res.status(403).send({ error: "forbidden " });
+        if (authorQuery) {
+            match.author = req.query.author;
+        }
+        const sortBy = req.query.sortBy;
+        const sort = {};
+        if (sortBy) {
+            const parts = req.query.sortBy.split(":");
+            sort[parts[0]] = (parts[1] === "desc" ? -1 : 1);
+        }
+        const books = await Book.find(match).skip(skip).limit(limit).sort(sort).populate("category author").exec();
+        res.send(books);
+    } catch {
+        res.status(500).send();
     }
 });
 
 router.get("/books/:id", auth, async (req, res) => {
-    if (req.authorizedUser.isAdmin) {
-        const _id = req.params.id;
-        const book = await Book.findOne({ _id }).populate("category author").exec();
-        try {
-            if (!book) {
-                res.status(404).send({ error: "Resource not found!" });
-                return;
-            }
-            res.status(200).send(book);
-        } catch {
-            res.status(500).send();
+    const _id = req.params.id;
+    const book = await Book.findOne({ _id }).populate("category author").exec();
+    try {
+        if (!book) {
+            res.status(404).send({ error: "Resource not found!" });
+            return;
         }
-    } else {
-        res.status(403).send({ error: "forbidden " });
+        res.status(200).send(book);
+    } catch {
+        res.status(500).send();
     }
 });
 
