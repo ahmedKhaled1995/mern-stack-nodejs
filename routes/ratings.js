@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 const Rating = require("../models/rating");
 const auth = require("../middlewares/auth");
@@ -125,16 +126,28 @@ router.get("/ratings/:id", auth, async (req, res) => {
 
 router.get("/ratings/:id/avg", auth, async (req, res) => {
     try {
+        const bookId = mongoose.Types.ObjectId(req.params.id);
+        console.log(bookId);
         const bookAvgRating = await Rating.aggregate([
+            { $match: { bookRated: bookId } },
             { $group: { _id: req.params.id, average: { $avg: '$rating' }, count: { $sum: 1 } } },
         ]).exec();
         // console.log(bookAvgRating);
         res.send(bookAvgRating);
-    } catch {
-        res.status(500).send();
+    } catch (error) {
+        res.status(500).send({ error });
     }
 });
 
 
 
 module.exports = router;
+
+// $lookup: {
+
+//     from: "books",
+//     localField: "bookRated",
+//     foreignField: "_id",
+//     as: "book"
+
+// },
