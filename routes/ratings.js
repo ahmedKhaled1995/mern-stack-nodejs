@@ -126,9 +126,9 @@ router.get("/ratings/:id", auth, async (req, res) => {
 router.get("/ratings/:id/avg", auth, async (req, res) => {
     try {
         const bookAvgRating = await Rating.aggregate([
-            { $group: { _id: req.params.id, average: { $avg: '$rating' } } },
+            { $group: { _id: req.params.id, average: { $avg: '$rating' }, count: { $sum: 1 } } },
         ]).exec();
-        console.log(bookAvgRating);
+        // console.log(bookAvgRating);
         res.send(bookAvgRating);
     } catch {
         res.status(500).send();
