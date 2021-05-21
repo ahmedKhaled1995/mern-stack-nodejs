@@ -1,7 +1,9 @@
 const express = require("express");
+const sharp = require("sharp");
 
 const Book = require("../models/book");
 const auth = require("../middlewares/auth");
+const uplaoadAvatars = require("../helpers/uploadAvatars");
 
 
 const router = new express.Router();
@@ -88,6 +90,7 @@ router.patch("/books/:id", auth, async (req, res) => {
             bookUpdateList.forEach((update) => {
                 bookDocToUpdate[update] = req.body[update];
             });
+            await bookDocToUpdate.execPopulate("category author");
             await bookDocToUpdate.save();
             res.send(bookDocToUpdate);
         } catch (error) {
@@ -116,5 +119,68 @@ router.delete("/books/:id", auth, async (req, res) => {
     }
 });
 
+router.post(
+    "/books/:id/avatar",
+    auth,
+    uplaoadAvatars.single("avatar"),
+    async (req, res) => {
+        const imageBuffer = await sharp(req.file.buffer)
+            .resize({ width: 250, height: 250 })
+            .png()
+            .toBuffer();
+        const _id = req.params.id;
+        try {
+            const book = await Book.findOne({ _id });
+            book.avatar = imageBuffer;
+            await book.save();
+            res.send({ status: 200 });
+        } catch (err) {
+            res.status(404).send({ error: "Resource not found!" });
+        }
+
+    },
+    (error, req, res, next) => {
+        res
+            .status(400)
+            .send({ error: "Please Upload image that doesn't excced 1MB" });
+    }
+);
+
+router.delete(
+    "/books/:id/avatar",
+    auth,
+    uplaoadAvatars.single("avatar"),
+    async (req, res) => {
+        const _id = req.params.id;
+        try {
+            const book = await Book.findOne({ _id });
+            book.avatar = undefined;
+            await book.save();
+            res.send();
+        } catch (err) {
+            res.status(404).send({ error: "Resource not found!" });
+        }
+    }
+);
+
+// note that postman can render the image (will display it in its binary form), so use chrome
+router.get("/books/:id/avatar", async (req, res) => {
+    try {
+        const _id = req.params.id;
+        try {
+            const book = await Book.findOne({ _id });
+            if (!book || !book.avatar) {
+                throw new Error("Can load image");
+            }
+            res.set("Content-Type", "image/png"); // note how we didn't have to explicitly use res.set("Content-Type", "application/json") when we were sending
+            // back out json because express does it automatically for us
+            res.send(book.avatar);
+        } catch (err) {
+            res.status(404).send({ error: "Resource not found!" });
+        }
+    } catch (error) {
+        res.status(404).send({ error: error.message });
+    }
+});
 
 module.exports = router;

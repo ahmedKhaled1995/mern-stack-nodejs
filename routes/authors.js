@@ -114,4 +114,69 @@ router.delete("/authors/:id", auth, async (req, res) => {
 });
 
 
+router.post(
+    "/authors/:id/avatar",
+    auth,
+    uplaoadAvatars.single("avatar"),
+    async (req, res) => {
+        const imageBuffer = await sharp(req.file.buffer)
+            .resize({ width: 250, height: 250 })
+            .png()
+            .toBuffer();
+        const _id = req.params.id;
+        try {
+            const author = await Author.findOne({ _id });
+            author.avatar = imageBuffer;
+            await author.save();
+            res.send({ status: 200 });
+        } catch (err) {
+            res.status(404).send({ error: "Resource not found!" });
+        }
+
+    },
+    (error, req, res, next) => {
+        res
+            .status(400)
+            .send({ error: "Please Upload image that doesn't excced 1MB" });
+    }
+);
+
+router.delete(
+    "/authors/:id/avatar",
+    auth,
+    uplaoadAvatars.single("avatar"),
+    async (req, res) => {
+        const _id = req.params.id;
+        try {
+            const author = await Author.findOne({ _id });
+            author.avatar = undefined;
+            await author.save();
+            res.send();
+        } catch (err) {
+            res.status(404).send({ error: "Resource not found!" });
+        }
+    }
+);
+
+// note that postman can render the image (will display it in its binary form), so use chrome
+router.get("/authors/:id/avatar", async (req, res) => {
+    try {
+        const _id = req.params.id;
+        try {
+            const author = await Author.findOne({ _id });
+            if (!author || !author.avatar) {
+                throw new Error("Can load image");
+            }
+            res.set("Content-Type", "image/png"); // note how we didn't have to explicitly use res.set("Content-Type", "application/json") when we were sending
+            // back out json because express does it automatically for us
+            res.send(author.avatar);
+        } catch (err) {
+            res.status(404).send({ error: "Resource not found!" });
+        }
+    } catch (error) {
+        res.status(404).send({ error: error.message });
+    }
+});
+
+
 module.exports = router;
